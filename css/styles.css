@@ -15,6 +15,11 @@
   --font: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
+/* Keep native `hidden` working when components set `display` (e.g. .modal { display: flex }) */
+[hidden] {
+  display: none !important;
+}
+
 *,
 *::before,
 *::after {
