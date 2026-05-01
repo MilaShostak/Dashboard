@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Demo</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <button type="button" class="sidebar-fab" id="sidebar-open" aria-label="Open sidebar" hidden>→</button>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__head">
+        <button type="button" class="icon-btn" id="sidebar-toggle" aria-label="Toggle sidebar">☰</button>
+      </div>
+      <div class="sidebar__section">
+        <h3 class="sidebar__title">Period</h3>
+        <label class="field">
+          <span class="sr-only">Month</span>
+          <select id="select-month" class="select"></select>
+        </label>
+        <label class="field">
+          <span class="sr-only">Year</span>
+          <select id="select-year" class="select"></select>
+        </label>
+      </div>
+      <nav class="nav-tabs" aria-label="Main">
+        <button type="button" class="nav-tabs__btn is-active" data-tab="projects">Projects</button>
+        <button type="button" class="nav-tabs__btn" data-tab="employees">Employees</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section id="view-projects" class="view is-active">
+        <header class="view__header">
+          <h1>Projects</h1>
+          <div class="view__actions">
+            <button type="button" class="btn btn--primary" id="btn-add-project">+ Add Project</button>
+            <button type="button" class="btn" id="btn-seed-data">Seed Data</button>
+          </div>
+        </header>
+        <div id="projects-filter-chips" class="filter-chips"></div>
+        <div class="table-wrap">
+          <table class="data-table" id="projects-table">
+            <thead>
+              <tr>
+                <th><button type="button" class="th-btn" data-col="companyName" data-sort data-filter>Company Name<span class="sort-icon" data-sort-icon>⇅</span><span class="filter-icon">⌕</span></button></th>
+                <th><button type="button" class="th-btn" data-col="projectName" data-sort data-filter>Project Name<span class="sort-icon" data-sort-icon>⇅</span><span class="filter-icon">⌕</span></button></th>
+                <th><button type="button" class="th-btn" data-col="budget" data-sort>Budget<span class="sort-icon" data-sort-icon>⇅</span></button></th>
+                <th><button type="button" class="th-btn" data-col="capacity" data-sort>Employee Capacity<span class="sort-icon" data-sort-icon>⇅</span></button></th>
+                <th>Employees</th>
+                <th><button type="button" class="th-btn" data-col="income" data-sort>Estimated Income<span class="sort-icon" data-sort-icon>⇅</span></button></th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="projects-tbody"></tbody>
+          </table>
+        </div>
+        <p class="total-income" id="projects-total-income">Total Estimated Income: <span id="total-income-value">$0.00</span></p>
+      </section>
+
+      <section id="view-employees" class="view">
+        <header class="view__header">
+          <h1>Employees</h1>
+          <div class="view__actions">
+            <button type="button" class="btn btn--primary" id="btn-add-employee">+ Add Employee</button>
+          </div>
+        </header>
+        <div id="employees-filter-chips" class="filter-chips"></div>
+        <div class="table-wrap">
+          <table class="data-table" id="employees-table">
+            <thead>
+              <tr>
+                <th><button type="button" class="th-btn" data-col="name" data-sort data-filter>Name<span class="sort-icon" data-sort-icon>⇅</span><span class="filter-icon">⌕</span></button></th>
+                <th><button type="button" class="th-btn" data-col="surname" data-sort data-filter>Surname<span class="sort-icon" data-sort-icon>⇅</span><span class="filter-icon">⌕</span></button></th>
+                <th><button type="button" class="th-btn" data-col="age" data-sort>Age<span class="sort-icon" data-sort-icon>⇅</span></button></th>
+                <th><button type="button" class="th-btn" data-col="position" data-sort data-filter>Position<span class="sort-icon" data-sort-icon>⇅</span><span class="filter-icon">⌕</span></button></th>
+                <th><button type="button" class="th-btn" data-col="salary" data-sort>Salary<span class="sort-icon" data-sort-icon>⇅</span></button></th>
+                <th><button type="button" class="th-btn" data-col="estimatedPayment" data-sort>Estimated Payment<span class="sort-icon" data-sort-icon>⇅</span></button></th>
+                <th><button type="button" class="th-btn" data-col="project" data-filter>Project<span class="filter-icon">⌕</span></button></th>
+                <th><button type="button" class="th-btn" data-col="projectedIncome" data-sort>Projected Income<span class="sort-icon" data-sort-icon>⇅</span></button></th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employees-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Slide panels -->
+  <div class="overlay" id="overlay-panels" hidden></div>
+  <aside class="panel panel--right" id="panel-employee" aria-hidden="true">
+    <h2 class="panel__title">Add New Employee</h2>
+    <form id="form-employee" class="form" novalidate>
+      <label class="form__field">
+        Name: <span class="req">*</span>
+        <input type="text" name="name" id="emp-name" autocomplete="given-name" />
+        <span class="form__error" data-error-for="name"></span>
+      </label>
+      <label class="form__field">
+        Surname: <span class="req">*</span>
+        <input type="text" name="surname" id="emp-surname" autocomplete="family-name" />
+        <span class="form__error" data-error-for="surname"></span>
+      </label>
+      <label class="form__field">
+        Date of Birth: <span class="req">*</span>
+        <input type="date" name="dob" id="emp-dob" />
+        <span class="form__error" data-error-for="dob"></span>
+      </label>
+      <label class="form__field">
+        Position: <span class="req">*</span>
+        <select name="position" id="emp-position">
+          <option value="">Select position</option>
+        </select>
+        <span class="form__error" data-error-for="position"></span>
+      </label>
+      <label class="form__field">
+        Salary: <span class="req">*</span>
+        <input type="number" name="salary" id="emp-salary" step="0.01" min="0.01" />
+        <span class="form__error" data-error-for="salary"></span>
+      </label>
+      <div class="form__actions">
+        <button type="submit" class="btn btn--primary" id="emp-submit" disabled>Add</button>
+        <button type="button" class="btn" id="emp-cancel">Cancel</button>
+      </div>
+    </form>
+  </aside>
+
+  <aside class="panel panel--right" id="panel-project" aria-hidden="true">
+    <h2 class="panel__title">Add New Project</h2>
+    <form id="form-project" class="form" novalidate>
+      <label class="form__field">
+        Project Name: <span class="req">*</span>
+        <input type="text" name="projectName" id="proj-name" />
+        <span class="form__error" data-error-for="projectName"></span>
+      </label>
+      <label class="form__field">
+        Company Name: <span class="req">*</span>
+        <input type="text" name="companyName" id="proj-company" />
+        <span class="form__error" data-error-for="companyName"></span>
+      </label>
+      <label class="form__field">
+        Budget: <span class="req">*</span>
+        <input type="number" name="budget" id="proj-budget" step="0.01" min="0.01" />
+        <span class="form__error" data-error-for="budget"></span>
+      </label>
+      <label class="form__field">
+        Employee Capacity: <span class="req">*</span>
+        <input type="number" name="employeeCapacity" id="proj-capacity" step="1" min="1" />
+        <span class="form__error" data-error-for="employeeCapacity"></span>
+      </label>
+      <div class="form__actions">
+        <button type="submit" class="btn btn--primary" id="proj-submit" disabled>Add</button>
+        <button type="button" class="btn" id="proj-cancel">Cancel</button>
+      </div>
+    </form>
+  </aside>
+
+  <!-- Modals -->
+  <div class="modal-backdrop" id="modal-backdrop" hidden></div>
+
+  <div class="modal modal--center" id="modal-seed" hidden role="dialog" aria-labelledby="seed-title">
+    <div class="modal__content">
+      <header class="modal__head">
+        <h2 id="seed-title">Seed Data from Month</h2>
+        <button type="button" class="modal__close" id="seed-close" aria-label="Close">×</button>
+      </header>
+      <p class="modal__hint" id="seed-hint"></p>
+      <div class="table-wrap">
+        <table class="data-table data-table--compact">
+          <thead>
+            <tr>
+              <th>Year</th><th>Month</th><th>Projects</th><th>Employees</th><th>Total Est. Income</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="seed-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal modal--center" id="modal-generic" hidden role="dialog">
+    <div class="modal__content modal__content--narrow">
+      <p id="modal-generic-text"></p>
+      <div class="form__actions">
+        <button type="button" class="btn btn--primary" id="modal-generic-ok">OK</button>
+        <button type="button" class="btn" id="modal-generic-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal modal--center" id="modal-project-employees" hidden role="dialog">
+    <div class="modal__content modal__content--wide">
+      <header class="modal__head">
+        <h2 id="project-employees-title">Project employees</h2>
+        <button type="button" class="modal__close" data-close-modal aria-label="Close">×</button>
+      </header>
+      <div id="project-employees-body" class="modal__body"></div>
+    </div>
+  </div>
+
+  <div class="modal modal--center" id="modal-employee-assignments" hidden role="dialog">
+    <div class="modal__content modal__content--wide">
+      <header class="modal__head">
+        <h2 id="employee-assignments-title">Assignments</h2>
+        <button type="button" class="modal__close" data-close-modal aria-label="Close">×</button>
+      </header>
+      <div id="employee-assignments-body" class="modal__body"></div>
+    </div>
+  </div>
+
+  <div class="modal modal--center" id="modal-calendar" hidden role="dialog">
+    <div class="modal__content">
+      <header class="modal__head">
+        <h2 id="calendar-title">Availability</h2>
+        <button type="button" class="modal__close" data-close-calendar aria-label="Close">×</button>
+      </header>
+      <p class="calendar-meta" id="calendar-working"></p>
+      <p class="calendar-vacation" id="calendar-ranges"></p>
+      <div id="calendar-grid" class="calendar"></div>
+      <div class="form__actions">
+        <button type="button" class="btn btn--primary" id="calendar-save">Set Vacation</button>
+        <button type="button" class="btn" data-close-calendar>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal modal--center" id="modal-unassign" hidden role="dialog">
+    <div class="modal__content modal__content--wide">
+      <header class="modal__head">
+        <h2>Unassign</h2>
+        <button type="button" class="modal__close" id="unassign-close" aria-label="Close">×</button>
+      </header>
+      <div id="unassign-body" class="modal__body"></div>
+      <div class="form__actions">
+        <button type="button" class="btn btn--danger" id="unassign-confirm">Confirm</button>
+        <button type="button" class="btn" id="unassign-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignment / edit popup (positioned) -->
+  <div class="popover-backdrop" id="popover-backdrop" hidden></div>
+  <div class="assign-popover" id="assign-popover" hidden role="dialog">
+    <div class="assign-popover__inner">
+      <h3 class="assign-popover__title" id="assign-title">Assign</h3>
+      <p class="assign-popover__meta" id="assign-meta"></p>
+      <label class="form__field">
+        Project
+        <select id="assign-project"></select>
+      </label>
+      <label class="form__field">Capacity <span id="assign-cap-label"></span></label>
+      <input type="range" id="assign-capacity" min="0" max="15" step="1" />
+      <label class="form__field">Fit <span id="assign-fit-label"></span></label>
+      <input type="range" id="assign-fit" min="0" max="10" step="1" />
+      <p class="assign-popover__hint" id="assign-hint"></p>
+      <div class="form__actions">
+        <button type="button" class="btn btn--primary" id="assign-save">Save</button>
+        <button type="button" class="btn" id="assign-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter dropdown -->
+  <div class="filter-popup" id="filter-popup" hidden>
+    <div class="filter-popup__inner">
+      <div id="filter-popup-text-wrap">
+        <input type="text" class="filter-popup__input" id="filter-input" />
+      </div>
+      <div id="filter-popup-select-wrap" hidden>
+        <select id="filter-select" class="select"></select>
+      </div>
+      <div class="filter-popup__actions">
+        <button type="button" class="btn btn--primary btn--sm" id="filter-apply">Apply</button>
+        <button type="button" class="btn btn--sm" id="filter-popup-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link action menu -->
+  <div class="action-menu" id="action-menu" hidden></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
