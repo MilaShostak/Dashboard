@@ -1177,12 +1177,16 @@ function bindInlineEdit() {
       posCell.textContent = "";
       posCell.appendChild(sel);
       sel.focus();
+      let committed = false;
       const done = () => {
+        if (committed) return;
+        committed = true;
         updateEmployeeField(state.store, currentKey(), id, "position", sel.value);
         persist();
         refresh();
       };
       sel.addEventListener("change", done);
+      sel.addEventListener("blur", done);
     }
     const salCell = e.target.closest(".cell-salary");
     if (salCell && !salCell.querySelector("input")) {
